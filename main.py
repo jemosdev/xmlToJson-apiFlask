@@ -36,7 +36,6 @@ def cargar_archivo():
         try:
             #leer el archivo XML y realizar la transformación
             xml = xmltodict.parse(archivo.read())
-
             objeto_json = convertXmltoJson(xml)
             return jsonify({'resultado': objeto_json})
         except Exception as e:
