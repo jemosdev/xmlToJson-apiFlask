@@ -92,8 +92,7 @@ def convertXmltoJson(xml):
         'cbc:PayableAmount': purchasedItems['cac:LegalMonetaryTotal']['cbc:PayableAmount']['#text']
     }
     values.append(data2)
-    result = json.dumps(values)
-    return result
+    return values
 
 """
 @app.route('/descargar-json')
