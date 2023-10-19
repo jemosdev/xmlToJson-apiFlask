@@ -22,19 +22,19 @@ def cargar_archivo():
     if (request.method == "GET"):
         return render_template('loading.html')
     
-        #verificar que se haya cargado un archivo
+    #verify that the file has been uploaded
     if 'archivo' not in request.files:
         return jsonify({'error': 'No se ha proporcionado ningún archivo'})
     
     archivo = request.files['archivo']
 
-    #verificar que el archivo tenga una extension XML
+    #verify that the file has an XML extension
     if archivo.filename == "":
         return jsonify({'error': 'El archivo no tiene nombre'})                
     
     if archivo and archivo.filename.endswith('.xml'):
         try:
-            #leer el archivo XML y realizar la transformación
+            #Read the XML file and doing the JSON conversion
             xml = xmltodict.parse(archivo.read())
             objeto_json = convertXmltoJson(xml)
             return jsonify({'resultado': objeto_json})
@@ -74,7 +74,7 @@ def convertXmltoJson(xml):
             }
 
         if 'cac:Item' in element:
-            cac_Item = element['cac:Item']
+            #cac_Item = element['cac:Item']
             data['cac:Item'] = {
                 'cbc:Description': element['cac:Item']['cbc:Description'],
                 'cac:SellersItemIdentification': element['cac:Item']['cac:SellersItemIdentification']['cbc:ID']
@@ -94,17 +94,6 @@ def convertXmltoJson(xml):
     values.append(data2)
     return values
 
-"""
-@app.route('/descargar-json')
-def descargar_json():
-    #obtener el resultado JSON que se desea proporcionar
-    resultado_json = obtener_resultado_json()
-
-    response = make_response(resultado_json)
-    response.headers['Content-Disposition'] = "attachment; filename= resultado.json"
-    response.headers['Content-Type'] = "application/json"
-    return response
-"""
 
 if __name__ == '__main__':
     app.run(port= 5000, debug= True)
