@@ -31,8 +31,8 @@ def cargar_archivo():
     #verify that the file has an XML extension
     if archivo.filename == "":
         return jsonify({'error': 'El archivo no tiene nombre'})                
-    
-    if archivo and archivo.filename.endswith('.xml'):
+    else:
+    #if archivo and archivo.filename.endswith('.xml'):
         try:
             #Read the XML file and doing the JSON conversion
             xml = xmltodict.parse(archivo.read())
@@ -41,7 +41,7 @@ def cargar_archivo():
         except Exception as e:
             return jsonify({'error': f'Error al procesar el archivo: {str(e)}'})
         
-    return jsonify({'error': 'El archivo no tiene formato XML'})
+    #return jsonify({'error': 'El archivo no tiene formato XML'})
 
 def convertXmltoJson(xml):
     #open and read XML file
