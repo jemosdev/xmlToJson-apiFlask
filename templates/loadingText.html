@@ -9,11 +9,11 @@
 <body>
     <main class="container py-5">
         <section class="card card-body">
-            <h2 class="display-2 text-center">Por favor carga el documento</h2>
-            <form action="/cargar-archivo" method="POST" enctype="multipart/form-data" class="card card-body">
+            <h2 class="display-2 text-center">Por favor carga el texto plano</h2>
+            <form action="/cargar-texto" method="POST" class="card card-body">
                 <div class="custom-file">
-                    <input type="file" name="archivo" class= "custom-file-input" required>
-                    <label for="validateCustomFile" class="custom-file-label">Seleccionar Archivo</label>
+                    <input type="text" name="plane_text" class= "form-control" required>
+                    <label for="validateCustomFile" class="custom-file-label">Pegar texto</label>
                 </div>
                 <div class="form-group mb-5 text-center mt-5">
                     <button type="submit" class="btn btn-primary">Convertir</button>

@@ -1,4 +1,5 @@
-import xmltodict, json
+import xmltodict
+import xml.etree.ElementTree as ET
 from flask import Flask, render_template, redirect, url_for, request, jsonify
 
 
@@ -20,7 +21,7 @@ def not_found(error):
 @app.route('/cargar-archivo', methods= ['GET','POST'])
 def cargar_archivo():
     if (request.method == "GET"):
-        return render_template('loading.html')
+        return render_template('loadingFile.html')
     
     #verify that the file has been uploaded
     if 'archivo' not in request.files:
@@ -32,16 +33,61 @@ def cargar_archivo():
     if archivo.filename == "":
         return jsonify({'error': 'El archivo no tiene nombre'})                
     else:
-    #if archivo and archivo.filename.endswith('.xml'):
-        try:
-            #Read the XML file and doing the JSON conversion
-            xml = xmltodict.parse(archivo.read())
-            objeto_json = convertXmltoJson(xml)
-            return jsonify({'resultado': objeto_json})
-        except Exception as e:
-            return jsonify({'error': f'Error al procesar el archivo: {str(e)}'})
+        if archivo and archivo.filename.endswith('.xml'):
+            try:
+                #Read the XML file and doing the JSON conversion
+                xml = xmltodict.parse(archivo.read())
+                objeto_json = convertXmltoJson(xml)
+                return jsonify({'resultado': objeto_json})
+            except Exception as e:
+                return jsonify({'error': f'Error al procesar el archivo: {str(e)}'})
+            
+        return jsonify({'error': 'El archivo no tiene formato XML'})
+
+
+@app.route('/cargar-texto', methods= ['GET','POST'])
+def cargar_texto():
+    if (request.method == "GET"):
+        return render_template('loadingText.html')
+    
+    #verify that the file has been uploaded
+    if 'plane_text' not in request.form:
+        return jsonify({'error': 'No se ha proporcionado ningún archivo'})
+    
+    plane_text = request.form['plane_text']
+
+    try:
+        #Read the XML file and doing the JSON conversion
+        object_json = convertTextToJson(plane_text)
+        #object_json = object_json['{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}InvoiceLine']
         
-    #return jsonify({'error': 'El archivo no tiene formato XML'})
+        #process cac:LegalMonetaryTotal section
+        object_json = object_json['{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}LegalMonetaryTotal']
+        #reducing the key's name for more readable
+        new_object_json = {}
+        for key, value in object_json.items():
+            modified_key = key.replace("{urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2}", "")
+            new_object_json[modified_key] = value
+        return (new_object_json)
+    except Exception as e:
+        return jsonify({'error': f'Error al procesar el archivo: {str(e)}'})
+
+
+def convertTextToJson(plane_text):
+
+    #parsear the xml
+    root = ET.fromstring(plane_text)
+    
+    result = {}
+
+    for child in root:
+        if len(child) == 0:
+            result[child.tag] = child.text
+        else:
+            result[child.tag] = convertTextToJson(ET.tostring(child))
+    
+    return result
+
 
 def convertXmltoJson(xml):
     #open and read XML file
